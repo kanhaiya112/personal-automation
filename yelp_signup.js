@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Yelp SignUp
 // @namespace    http://tampermonkey.net/
-// @version      2026-05-02
+// @version      2026-05-11
 // @description  try to take over the world!
 // @author       Kanhaiya Singh
 // @match        https://www.yelp.com/signup*
@@ -13,8 +13,9 @@
   "use strict";
 
   const ZIPCODE_LENGTH = 5; // Example zip code length
-  // Set to 'true' to use a random name from the NAMES array instead of a fixed name.
-  const USE_RANDOM_NAME = false;
+  const PREFERED_ZIPCODE = "20005";
+  // Set to 'yes' to use a random name from the NAMES array instead of a fixed name.
+  const USE_RANDOM_NAME = "no"; // yes or no
   // PREFERED_NAME can be changed to any name you want to use for the first and last name fields.
   // You can also add more names to the NAMES array
   // and set USE_RANDOM_NAME to true to randomly select a name for each signup.
@@ -26,7 +27,7 @@
   function getName() {
     // This function returns a name based on the USE_RANDOM_NAME flag.
     // If USE_RANDOM_NAME is true and there are names in the NAMES array,
-    if (USE_RANDOM_NAME && NAMES.length > 0) {
+    if (USE_RANDOM_NAME.toLowerCase() === "yes" && NAMES.length > 0) {
       const randomIndex = Math.floor(Math.random() * NAMES.length);
       return NAMES[randomIndex];
     }
@@ -106,7 +107,9 @@
         if (BOT_KEYWORDS.some((keyword) => text.includes(keyword))) {
           // If captcha is present, we can fill the zip code
           console.debug("Captcha detected. Filling zip code.");
-          zipInput.value = getRandomZipCode(ZIPCODE_LENGTH);
+          if (!zipInput.value){
+            zipInput.value = PREFERED_ZIPCODE || getRandomZipCode(ZIPCODE_LENGTH);
+          }
           return true;
         }
       }
